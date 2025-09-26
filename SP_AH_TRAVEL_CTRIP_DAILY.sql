@@ -294,12 +294,14 @@ INSERT INTO TEMP_NLR_PORTFOLIO_PISC_ST_DAILY_CTRIP ( ---insert ctrip agency
 
 
 
-WITH getbatch_1 AS (
-    SELECT DISTINCT b.batchno
-    FROM adw_prod_tgt.nlr_insured_mst_v2 a 
-    JOIN adw_prod_tgt.nlr_insured_trn_v2 b ON a.inseqno = b.inseqno
-    WHERE a.statcode = 2565
-),
+WITH 
+
+-- getbatch_1 AS (
+--     SELECT DISTINCT b.batchno
+--     FROM adw_prod_tgt.nlr_insured_mst_v2 a 
+--     JOIN adw_prod_tgt.nlr_insured_trn_v2 b ON a.inseqno = b.inseqno
+--     WHERE a.statcode = 2565 --spoiled
+-- ),
 --  agent lookup
 agent_data AS (
     SELECT nameid, MAX(agtno) as max_agtno
@@ -459,7 +461,7 @@ WHERE 1=1
     AND d.prodcode IN ('ST','SC','DA','SU')
     AND g.nameid IN (7289388)
     AND d.statcode NOT IN (529, 2653)
-    AND NOT EXISTS (SELECT 1 FROM getbatch_1 gb WHERE gb.batchno = b.batchno)
+    --AND NOT EXISTS (SELECT 1 FROM getbatch_1 gb WHERE gb.batchno = b.batchno)
     AND TRUNC(b.trandate) = p_date  --incremental
 
     ;
