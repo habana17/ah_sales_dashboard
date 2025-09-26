@@ -13,6 +13,7 @@ Ver          Date                  Author             Description
 1.0        07/03/2025            Francis          1. SP_AH_TRAVEL_OTHERS_DAILY
 2.0        08/11/2025            Francis          1. Changed the incremental into trandate
                                                   2. Changed not in to not exists
+3.0        09/26/2025            Francis          1. Removed the spoiled status                                                 
 
 NOTES:
 
@@ -308,12 +309,12 @@ INSERT INTO adw_prod_tgt.TEMP_NLR_PORTFOLIO_PISC_ST_DAILY_OTHERS ( ---insert tra
 -- Optimized version with single aggregation and performance improvements
 WITH 
 -- Pre-filter batch numbers to exclude
-excluded_batches AS (
-    SELECT DISTINCT b.batchno
-    FROM adw_prod_tgt.nlr_insured_mst_v2 a 
-    JOIN adw_prod_tgt.nlr_insured_trn_v2 b ON a.inseqno = b.inseqno
-    WHERE a.statcode = 2565
-),
+-- excluded_batches AS (
+--     SELECT DISTINCT b.batchno
+--     FROM adw_prod_tgt.nlr_insured_mst_v2 a 
+--     JOIN adw_prod_tgt.nlr_insured_trn_v2 b ON a.inseqno = b.inseqno
+--     WHERE a.statcode = 2565 --spoiled status
+-- ),
 -- Pre-aggregate agent data to avoid repeated subqueries
 agent_lookup AS (
     SELECT nameid, MAX(agtno) as max_agtno
@@ -487,7 +488,7 @@ WHERE 1=1
     AND d.prodcode IN ('ST','SC','DA','SU')
     AND g.nameid NOT IN (7289388)
     AND d.statcode NOT IN (529, 2653)
-    AND NOT EXISTS (SELECT 1 FROM excluded_batches eb WHERE eb.batchno = b.batchno)
+    -- AND NOT EXISTS (SELECT 1 FROM excluded_batches eb WHERE eb.batchno = b.batchno)
     AND TRUNC(b.trandate) = p_date --incremental
     -- AND b.polno = 'TR-ST-HO-24-0048407-00-D'
     --AND b.trandate >= DATE '2024-05-01' 
