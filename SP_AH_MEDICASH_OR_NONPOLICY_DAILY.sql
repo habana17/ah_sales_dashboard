@@ -75,7 +75,7 @@ NOTES:
          AND trunc(b.ordate) = p_date
     ;
 
-        COMMIT;
+     --    COMMIT;
         adw_prod_tgt.sp_adw_table_logs('MEDICASH_OR_NONPOLICY_TEMP_DAILY','SP_AH_MEDICASH_OR_NONPOLICY_DAILY',SYSDATE,SYSDATE,'UPDATE');  
 
 
@@ -96,7 +96,7 @@ NOTES:
                      WHERE x.agtno = a.agtno
                      );
 
-        COMMIT; 
+     --    COMMIT; 
 
         adw_prod_tgt.sp_adw_table_logs('MEDICASH_LOCATION_AGTNO_DAILY','SP_AH_MEDICASH_OR_NONPOLICY_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
@@ -110,7 +110,7 @@ NOTES:
         SELECT adw_prod_tgt.fnget_tcodesutil_t9 (a.nameid) tcode, a.agtno
         FROM adw_prod_tgt.MEDICASH_LOCATION_AGTNO_DAILY a;
 
-        COMMIT;
+     --    COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('MEDICASH_LOCATION_TEMP_DAILY','SP_AH_MEDICASH_OR_NONPOLICY_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
@@ -131,7 +131,7 @@ NOTES:
         AND y.grkey = 'cxx_geninfo_tcodesT9'
         AND x.prohibited_tcode = z.tcode;
 
-        COMMIT;
+     --    COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('MEDICASH_LOCATION_DAILY','SP_AH_MEDICASH_OR_NONPOLICY_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
@@ -141,9 +141,8 @@ NOTES:
 
         DELETE adw_prod_tgt.medicash_or_nonpolicy_daily
         WHERE 1=1 
-        AND  trunc(ordate) >= trunc(sysdate); --updated by francis 06112025 
-
-        COMMIT;
+        AND  trunc(ordate) >= p_date; --updated by francis 09292025 
+        --COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('MEDICASH_OR_NONPOLICY_DAILY','SP_AH_MEDICASH_OR_NONPOLICY_DAILY',SYSDATE,'','INSERT');
 
