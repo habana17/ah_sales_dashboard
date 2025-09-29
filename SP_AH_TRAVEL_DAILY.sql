@@ -25,7 +25,7 @@ NOTES:
 
     -- Step 1: Clear existing rows but keep table structure intact
     DELETE FROM TEMP_NLR_PORTFOLIO_PISC_DAILY;
-    COMMIT;
+    -- COMMIT;
     
     -- Step 2: Insert Ctrip data into TEMP_NLR_PORTFOLIO_PISC_DAILY (TRAVEL CTRIP)
     BEGIN
@@ -63,7 +63,7 @@ NOTES:
     -- Step 3: Insert Other Travel data into TEMP_NLR_PORTFOLIO_PISC_DAILY (TRAVEL OTHERS)
 
     DELETE FROM TEMP_NLR_PORTFOLIO_PISC_DAILY;
-    COMMIT;
+    -- COMMIT;
 
     BEGIN
         SP_AH_TRAVEL_OTHERS_DAILY(p_date);
@@ -95,47 +95,6 @@ NOTES:
         END;    
     END;
 
-    ---------------------------------------------------2--------------------------------------------------------
-
-    -- Step 4: Insert AH data into TEMP_NLR_PORTFOLIO_PISC_DAILY (AH)
-    --insert AH data to TEMP_NLR_PORTFOLIO_PISC_DAILY(AH)
-
-
-    DELETE FROM TEMP_NLR_PORTFOLIO_PISC_DAILY;
-    COMMIT;
-
-    BEGIN
-        SP_AH_AHDETAILS_DAILY(p_date);
-    EXCEPTION
-            WHEN OTHERS THEN
-        DECLARE
-            err_msg VARCHAR2(4000);
-        BEGIN
-            err_msg := SQLERRM;
-            INSERT INTO process_error_log (procedure_name, error_message,remarks)
-            VALUES ('SP_AH_AHDETAILS_DAILY', err_msg,'AH Sales Dashboard AH DATA');
-            COMMIT;
-        END;    
-    END; 
-
-
-    ---run EIS 
-    BEGIN
-        SP_AH_LOAD_EIS(p_date);
-    EXCEPTION
-            WHEN OTHERS THEN
-        DECLARE
-            err_msg VARCHAR2(4000);
-        BEGIN
-            err_msg := SQLERRM;
-            INSERT INTO process_error_log (procedure_name, error_message,remarks)
-            VALUES ('SP_AH_LOAD_EIS', err_msg,'AH Sales Dashboard AH DATA EIS');
-            COMMIT;
-        END;    
-    END;
-
-   
-
 
     ---------------------------------------------------3--------------------------------------------------------
 
@@ -154,23 +113,6 @@ NOTES:
         END;    
     END;
 
-
-    ---------------------------------------------------4--------------------------------------------------------
-
-    -- Step 7: INSERT AH_TRANSACTIONS_DAILY
-    BEGIN
-        SP_AH_LOAD_AHTRANSACTIONS(p_date);
-    EXCEPTION
-            WHEN OTHERS THEN
-        DECLARE
-            err_msg VARCHAR2(4000);
-        BEGIN
-            err_msg := SQLERRM;
-            INSERT INTO process_error_log (procedure_name, error_message,remarks)
-            VALUES ('SP_AH_LOAD_AHTRANSACTIONS', err_msg,'AH Sales Dashboard');
-            COMMIT;
-        END;    
-    END;
 
     COMMIT;
 
