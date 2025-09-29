@@ -18,8 +18,6 @@ BEGIN
 
 
 BEGIN
-
-
 --Delete all policy numbers (POLNO) that were added yesterday to allow re-insertion of all policy numbers in the next step.
 adw_prod_tgt.sp_adw_table_logs('BCC_PAIDPREM_DAILY','SP_AH_BCC_PAIDPREM_DAILY',SYSDATE,'','DELETE');
 DELETE FROM BCC_PAIDPREM_DAILY
