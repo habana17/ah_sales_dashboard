@@ -21,7 +21,7 @@ BEGIN
         DELETE adw_prod_tgt.medicash_or_d2c_daily
         WHERE trunc(ordate) >= trunc(sysdate); --updated by francis 06112025
 
-        COMMIT;
+        -- COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('MEDICASH_OR_D2C_DAILY','SP_AH_MEDICASH_OR_D2C_DAILY',SYSDATE,'','INSERT');
         INSERT INTO adw_prod_tgt.medicash_or_d2c_daily (ordate,transubtype,orname,ordisplay,ornum,oramt,collsource,
