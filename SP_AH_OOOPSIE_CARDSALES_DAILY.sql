@@ -68,7 +68,7 @@ BEGIN
        AND trunc(b.ordate) = p_date --incremental
        ;
 
-       COMMIT;
+    --    COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('OOOPSIE_CARDSALES_TEMP1_DAILY','SP_AH_OOOPSIE_CARDSALES_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
@@ -119,7 +119,7 @@ BEGIN
         AND trunc(b.ordate) = p_date --incremental
         ;
 
-        COMMIT;
+        -- COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('OOOPSIE_CARDSALES_TEMP2_DAILY','SP_AH_OOOPSIE_CARDSALES_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
@@ -140,7 +140,7 @@ BEGIN
                      FROM adw_prod_tgt.OOOPSIE_CARDSALES_TEMP2_DAILY xx
                      WHERE xx.agtno = a.agtno);
 
-        COMMIT; 
+        -- COMMIT; 
 
         adw_prod_tgt.sp_adw_table_logs('AOCAGT_LOCATION_AGTNO_DAILY','SP_AH_OOOPSIE_CARDSALES_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
@@ -154,7 +154,7 @@ BEGIN
         SELECT adw_prod_tgt.fnget_tcodesutil_t9 (a.nameid) tcode, a.agtno
         FROM adw_prod_tgt.AOCAGT_LOCATION_AGTNO_DAILY a;
 
-        COMMIT;
+        -- COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('AOCAGT_LOCATION_TEMP_DAILY','SP_AH_OOOPSIE_CARDSALES_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
@@ -175,7 +175,7 @@ BEGIN
         AND y.grkey = 'cxx_geninfo_tcodesT9'
         AND x.prohibited_tcode = z.tcode;
 
-        COMMIT;
+        -- COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('AOCAGT_LOCATION_DAILY','SP_AH_OOOPSIE_CARDSALES_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
