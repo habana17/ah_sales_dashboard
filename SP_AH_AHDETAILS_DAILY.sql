@@ -284,7 +284,8 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_ISRHOS_DAILY','SP_AH_AHDETAILS_DAILY',SYSDA
     SELECT DISTINCT b.polno, b.batchno
     FROM adw_prod_tgt.TEMP_EOM_HC_INPOLNO_DAILY a
     -- JOIN adw_prod_tgt.nlr_premium_summary_v2 b
-    JOIN adw_prod_tgt.NLR_PREMIUM_SUMMARY_CURR b --change nlr_premium_summary_v2 to NLR_PREMIUM_SUMMARY_CURR
+    -- JOIN adw_prod_tgt.NLR_PREMIUM_SUMMARY_CURR b --change nlr_premium_summary_v2 to NLR_PREMIUM_SUMMARY_CURR
+    JOIN adw_prod_tgt.nlr_billing_mst_v2 b  --replcae NLR_PREMIUM_SUMMARY_CURR to nlr_billing_mst_v2 for complete details 
       ON a.polno = b.polno
     WHERE b.batchno IN (
             SELECT batchno
@@ -430,19 +431,19 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_ISRHOS_DAILY','SP_AH_AHDETAILS_DAILY',SYSDA
         CASE WHEN g.pertype = 562 THEN x.max_agtno ELSE NULL END agtno,
         b.trantype, 
         d.issue_source, 
-        z.netpremtot, 
-        z.docsamt, 
-        z.lgtamt, 
-        z.ptaxamt, 
-        z.gpremtot, 
+        z.netprem as netpremtot ,-- z.netpremtot, 
+        z.docstamps as docsamt,-- z.docsamt, 
+        z.lgt as lgtamt,-- z.lgtamt, 
+        z.premtax as ptaxamt,-- z.ptaxamt, 
+        z.totamtdue as gpremtot,-- z.gpremtot, 
         z.commamt, 
         z.commwtaxamt, 
-        z.comwtax, 
+        z.commwtax as comwtax,-- z.comwtax, 
         z.sfeeamt, 
         z.sfeetax, 
-        z.sfeewtaxamt,
-        z.trandate AS trandateparm, 
-        z.other_charges, 
+        z.sfeewtaxamt as sfeewtaxamt,-- z.sfeewtaxamt,
+        z.issuedate as trandateparm,-- z.trandate AS trandateparm, 
+        z.othercharges as other_charges,-- z.other_charges, 
         0 vatamt, 
         z.totsi, 
         b.effdate AS effdate2, 
@@ -455,7 +456,7 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_ISRHOS_DAILY','SP_AH_AHDETAILS_DAILY',SYSDA
         0 acctgdst, 
         0 acctgtsi, 
         0 acctgothchrg,
-        CASE WHEN b.trantype <> 10009112 THEN CASE WHEN z.netpremtot > 0 THEN 'A' WHEN z.netpremtot < 0 THEN 'R' ELSE 'N' END ELSE NULL END ednt_type,
+        CASE WHEN b.trantype <> 10009112 THEN CASE WHEN z.netprem > 0 THEN 'A' WHEN z.netprem < 0 THEN 'R' ELSE 'N' END ELSE NULL END ednt_type,
         xx.effdate AS incept_dt 
   FROM 
       adw_prod_tgt.nlr_policy_tran_v2 b
@@ -495,7 +496,8 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_ISRHOS_DAILY','SP_AH_AHDETAILS_DAILY',SYSDA
       JOIN adw_prod_tgt.nlr_polbill_ref_v2 h ON h.polno = b.polno AND h.enddate IS NULL
       LEFT JOIN adw_prod_tgt.gct_geninfo_ref gmode ON gmode.refseqno = h.billmode  
       -- JOIN adw_prod_tgt.nlr_premium_summary_v2 z ON z.batchno = b.batchno AND z.polno = b.polno
-      JOIN adw_prod_tgt.NLR_PREMIUM_SUMMARY_CURR z ON z.batchno = b.batchno AND z.polno = b.polno --change nlr_premium_summary_v2 to NLR_PREMIUM_SUMMARY_CURR
+      -- JOIN adw_prod_tgt.NLR_PREMIUM_SUMMARY_CURR z ON z.batchno = b.batchno AND z.polno = b.polno --change nlr_premium_summary_v2 to NLR_PREMIUM_SUMMARY_CURR
+      JOIN adw_prod_tgt.nlr_billing_mst_v2 z ON z.batchno = b.batchno AND z.polno = b.polno
  WHERE f.enddate IS NULL 
        AND d.statcode <> 529
        AND d.statcode <> 2653 
@@ -518,10 +520,27 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_ISRHOS_DAILY','SP_AH_AHDETAILS_DAILY',SYSDA
       d.currency, 
       f.orgtype,
       f.mainline,
-                   g.nameid, g.pertype, b.trantype, d.issue_source, z.gpremtot, z.netpremtot, z.docsamt, z.lgtamt, z.ptaxamt, z.commamt,
-                   z.commwtaxamt, z.comwtax, z.sfeeamt, z.sfeetax, z.sfeewtaxamt, z.trandate, z.other_charges, z.vatamt, z.totsi, b.effdate,
-                   d.pol_source, b.userid,xx.effdate,x.max_agtno,cref.refdesc,gstat.refdesc,gmode.refdesc,ins.effdate,ins.expdate,gg.agtno,
-                   cc.namestr,da.refdesc,bx.clntid,ba.namestr,bb.namestr,fa.refdesc,dc.refdesc             
+      g.nameid, g.pertype, 
+      b.trantype, 
+      d.issue_source,              
+      z.netprem, -- z.netpremtot, 
+      z.docstamps, -- z.docsamt, 
+      z.lgt,--  z.lgtamt, 
+      z.premtax,-- z.ptaxamt, 
+      z.totamtdue,-- z.gpremtot, 
+      z.commamt, 
+      z.commwtaxamt, 
+      z.commwtax,-- z.comwtax, 
+      z.sfeeamt, 
+      z.sfeetax, 
+      z.sfeewtaxamt,-- z.sfeewtaxamt,
+      z.issuedate,-- z.trandate AS trandateparm, 
+      z.othercharges, -- z.other_charges 
+      z.vatamt, 
+      z.totsi,  
+      b.effdate,
+      d.pol_source, b.userid,xx.effdate,x.max_agtno,cref.refdesc,gstat.refdesc,gmode.refdesc,ins.effdate,ins.expdate,gg.agtno,
+      cc.namestr,da.refdesc,bx.clntid,ba.namestr,bb.namestr,fa.refdesc,dc.refdesc             
       )
 
 select  
@@ -751,7 +770,7 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_EOM_AHR_CANCEL_DAILY','SP_AH_AHDETAILS_DAIL
         yy.lgt, --add lgt
         --z.ptaxamt, 
         yy.premtax,--add premtax
-        gpremtot,
+        yy.totamtdue as gpremtot,
         --z.commamt,
         yy.commamt, --add
         --z.commwtaxamt, 
@@ -764,7 +783,8 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_EOM_AHR_CANCEL_DAILY','SP_AH_AHDETAILS_DAIL
         yy.sfeetax,--add
         --z.sfeewtaxamt,
         yy.sfeewtaxamt,--add
-        z.trandate AS trandateparm, 
+        -- z.trandate AS trandateparm, 
+        yy.issuedate AS trandateparm, 
        -- z.other_charges,
         yy.othercharges, --add
         0 vatamt, 
@@ -812,8 +832,8 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_EOM_AHR_CANCEL_DAILY','SP_AH_AHDETAILS_DAIL
        JOIN adw_prod_tgt.nlr_polbill_ref_v2 h ON h.polno = b.polno AND h.enddate IS NULL
        LEFT JOIN adw_prod_tgt.gct_geninfo_ref gmode ON gmode.refseqno = h.billmode     
       --  JOIN adw_prod_tgt.nlr_premium_summary_v2 z ON z.batchno = b.batchno AND z.polno = b.polno --
-       JOIN adw_prod_tgt.NLR_PREMIUM_SUMMARY_CURR z ON z.batchno = b.batchno AND z.polno = b.polno --change nlr_premium_summary_v2 to NLR_PREMIUM_SUMMARY_CURR
-       LEFT JOIN adw_prod_tgt.nlr_billing_mst_v2 yy ON yy.batchno = b.batchno AND yy.polno = b.polno
+      --  JOIN adw_prod_tgt.NLR_PREMIUM_SUMMARY_CURR z ON z.batchno = b.batchno AND z.polno = b.polno --change nlr_premium_summary_v2 to NLR_PREMIUM_SUMMARY_CURR
+       JOIN adw_prod_tgt.nlr_billing_mst_v2 yy ON yy.batchno = b.batchno AND yy.polno = b.polno
  WHERE f.enddate IS NULL 
  AND d.statcode <> 529
  AND d.statcode <> 2653
@@ -828,8 +848,9 @@ and b.polno in (select polno from adw_prod_tgt.TEMP_EOM_AHR_CANCEL_DAILY)
 --AND b.polno = 'AH-BP-HO-24-0000226-00-D'
 GROUP  BY b.batchno, b.proposal_no, b.polno, f.t1, g.nameid, d.prodcode, d.statcode, h.billmode, g.dist, f.subline, f.LOB,
                    d.statcode, d.policytype, f.prodcategory, d.segmentcode, d.branchcode, f.co_code, d.currency, f.orgtype, f.mainline,
-                   g.nameid, g.pertype, b.trantype, d.issue_source, z.gpremtot, 
-                   z.netpremtot, 
+                   g.nameid, g.pertype, b.trantype, d.issue_source, 
+                  --  z.gpremtot, 
+                  --  z.netpremtot, 
                    yy.netprem, --add basic premium
                    yy.docstamps, --add dst
                    yy.lgt, --add lgt
@@ -841,13 +862,22 @@ GROUP  BY b.batchno, b.proposal_no, b.polno, f.t1, g.nameid, d.prodcode, d.statc
                    yy.totsi, --add
                    yy.othercharges, -- add
                    yy.commwtax,
-                   z.docsamt, 
-                   z.lgtamt, 
-                   z.ptaxamt, 
-                   z.commamt,
+                   yy.totamtdue, 
+                  --  z.docsamt, 
+                  --  z.lgtamt, 
+                  --  z.ptaxamt, 
+                  --  z.commamt,
                    yy.commamt,
-                   z.commwtaxamt, 
-                   z.comwtax, z.sfeeamt, z.sfeetax, z.sfeewtaxamt, z.trandate, z.other_charges, z.vatamt, z.totsi, b.effdate,
+                  --  z.commwtaxamt, 
+                  --  z.comwtax, 
+                  --  z.sfeeamt, 
+                  --  z.sfeetax, 
+                  --  z.sfeewtaxamt, 
+                  --  z.trandate, 
+                  --  z.other_charges, 
+                  --  z.vatamt, 
+                  --  z.totsi, 
+                   b.effdate,
                    d.pol_source, b.userid,xx.effdate,cref.refdesc,gstat.refdesc,gmode.refdesc,ins.effdate,ins.expdate,x.max_agtno,
                    gg.agtno,cc.namestr,da.refdesc,bx.clntid,ba.namestr,bb.namestr,fa.refdesc,dc.refdesc
                    ;
