@@ -74,6 +74,7 @@ BEGIN
                     AND a.cardstart = c.cardstart
                     AND a.cardstart = d.cardstart
                     AND b.timestmp = (select max(m.timestmp) from adw_prod_tgt.xbc_or_history m where m.ordisplay = b.ordisplay)
+                    AND trunc(b.ordate) = p_date --incremental
                     );
 
        --  COMMIT;
