@@ -25,8 +25,7 @@ BEGIN
 
         DELETE adw_prod_tgt.medicash_or_ret_policy_det_daily
         WHERE trunc(ordate) >= trunc(sysdate); --updated by francis 06112025
-
-        COMMIT;
+       --  COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('MEDICASH_OR_RET_POLICY_DET_DAILY','SP_AH_MEDICASH_OR_RETAIL_DAILY',SYSDATE,'','INSERT');
 
