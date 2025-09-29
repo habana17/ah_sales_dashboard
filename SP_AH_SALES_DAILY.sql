@@ -25,6 +25,7 @@ BEGIN
     EXCEPTION
             WHEN OTHERS THEN
         DECLARE
+            PRAGMA AUTONOMOUS_TRANSACTION;
             err_msg VARCHAR2(4000);
         BEGIN
             err_msg := SQLERRM;
@@ -39,6 +40,7 @@ BEGIN
     EXCEPTION
             WHEN OTHERS THEN
         DECLARE
+            PRAGMA AUTONOMOUS_TRANSACTION;
             err_msg VARCHAR2(4000);
         BEGIN
             err_msg := SQLERRM;
@@ -67,6 +69,7 @@ BEGIN
     EXCEPTION
             WHEN OTHERS THEN
         DECLARE
+            PRAGMA AUTONOMOUS_TRANSACTION;
             err_msg VARCHAR2(4000);
         BEGIN
             err_msg := SQLERRM;
@@ -81,6 +84,7 @@ BEGIN
     EXCEPTION
             WHEN OTHERS THEN
         DECLARE
+            PRAGMA AUTONOMOUS_TRANSACTION;
             err_msg VARCHAR2(4000);
         BEGIN
             err_msg := SQLERRM;
@@ -97,6 +101,7 @@ BEGIN
     EXCEPTION
             WHEN OTHERS THEN
         DECLARE
+            PRAGMA AUTONOMOUS_TRANSACTION;
             err_msg VARCHAR2(4000);
         BEGIN
             err_msg := SQLERRM;
@@ -112,6 +117,7 @@ BEGIN
     EXCEPTION
             WHEN OTHERS THEN
         DECLARE
+            PRAGMA AUTONOMOUS_TRANSACTION;
             err_msg VARCHAR2(4000);
         BEGIN
             err_msg := SQLERRM;
@@ -126,6 +132,7 @@ BEGIN
     EXCEPTION
             WHEN OTHERS THEN
         DECLARE
+            PRAGMA AUTONOMOUS_TRANSACTION;
             err_msg VARCHAR2(4000);
         BEGIN
             err_msg := SQLERRM;
@@ -140,6 +147,7 @@ BEGIN
     EXCEPTION
             WHEN OTHERS THEN
         DECLARE
+            PRAGMA AUTONOMOUS_TRANSACTION;
             err_msg VARCHAR2(4000);
         BEGIN
             err_msg := SQLERRM;
@@ -154,6 +162,7 @@ BEGIN
     EXCEPTION
             WHEN OTHERS THEN
         DECLARE
+            PRAGMA AUTONOMOUS_TRANSACTION;
             err_msg VARCHAR2(4000);
         BEGIN
             err_msg := SQLERRM;
@@ -180,5 +189,7 @@ BEGIN
     -- END;  
 
     -- null;
+
+    COMMIT;
 
 END SP_AH_SALES_DAILY;
