@@ -19,11 +19,9 @@ NOTES:
 BEGIN
 
         adw_prod_tgt.sp_adw_table_logs('OOOPS_SALE_EXTRACT_TEMP_DAILY','SP_AH_OOOPS_SALE_EXTRACT_DAILY',SYSDATE,'','DELETE'); 
-
         EXECUTE IMMEDIATE 'TRUNCATE TABLE adw_prod_tgt.OOOPS_SALE_EXTRACT_TEMP_DAILY';
 
         adw_prod_tgt.sp_adw_table_logs('OOOPS_SALE_EXTRACT_TEMP_DAILY','SP_AH_OOOPS_SALE_EXTRACT_DAILY',SYSDATE,'','INSERT');
-
         INSERT INTO adw_prod_tgt.OOOPS_SALE_EXTRACT_TEMP_DAILY (paymentdate,paysource,ordisplay,orno,
                                                         billseqno,payor,planno,variant,
                                                         premium_percard,qty,payment,netprem,
@@ -78,16 +76,14 @@ BEGIN
                     AND b.timestmp = (select max(m.timestmp) from adw_prod_tgt.xbc_or_history m where m.ordisplay = b.ordisplay)
                     );
 
-        COMMIT;
+       --  COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('OOOPS_SALE_EXTRACT_TEMP_DAILY','SP_AH_OOOPS_SALE_EXTRACT_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
         adw_prod_tgt.sp_adw_table_logs('OOOPS_SALE_EXTRACT_TCODE_DAILY','SP_AH_OOOPS_SALE_EXTRACT_DAILY',SYSDATE,'','DELETE'); 
-
         EXECUTE IMMEDIATE 'TRUNCATE TABLE adw_prod_tgt.OOOPS_SALE_EXTRACT_TCODE_DAILY';
 
         adw_prod_tgt.sp_adw_table_logs('OOOPS_SALE_EXTRACT_TCODE_DAILY','SP_AH_OOOPS_SALE_EXTRACT_DAILY',SYSDATE,'','INSERT');
-
         INSERT INTO adw_prod_tgt.OOOPS_SALE_EXTRACT_TCODE_DAILY (nameid, tcode)
         SELECT a.nameid, NVL(NVL(tcode,vT9),'ZZZZZZ') tcode
         FROM (SELECT DISTINCT b.tcode, a.nameid
@@ -106,7 +102,7 @@ BEGIN
                                        WHERE a.agtno = aa.agtno)) b
         WHERE a.nameid = b.nameid;
 
-        COMMIT;
+       --  COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('OOOPS_SALE_EXTRACT_TCODE_DAILY','SP_AH_OOOPS_SALE_EXTRACT_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
@@ -128,7 +124,7 @@ BEGIN
                            FROM adw_prod_tgt.XAG_ASSIGN_v2 aa
                            WHERE a.agtno = aa.agtno);
 
-        COMMIT;       
+       --  COMMIT;       
 
         adw_prod_tgt.sp_adw_table_logs('OOOPS_SALE_EXTRACT_TCODE2_DAILY','SP_AH_OOOPS_SALE_EXTRACT_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
@@ -147,7 +143,7 @@ BEGIN
         AND b.table_name = 'CXX_GENINFO_REF'
         WHERE b.grkey = 'cxx_geninfo_tcodesT9';
 
-        COMMIT;
+       --  COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('OOOPS_SALE_EXTRACT_LOCATION_DAILY','SP_AH_OOOPS_SALE_EXTRACT_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
@@ -157,10 +153,9 @@ BEGIN
         WHERE 1=1
         AND trunc(paymentdate) >= trunc(sysdate); --updated by francis 06112025
 
-        COMMIT;
+       --  COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('OOOPS_SALE_EXTRACT_DAILY','SP_AH_OOOPS_SALE_EXTRACT_DAILY',SYSDATE,'','INSERT');
-
         INSERT INTO adw_prod_tgt.OOOPS_SALE_EXTRACT_DAILY (paymentdate,paysource,ordisplay,orno,billseqno,
                                                     payor,planno,variant,premium_percard,qty,
                                                     payment,cardstart,cardend,remarks,
