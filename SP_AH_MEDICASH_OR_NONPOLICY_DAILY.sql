@@ -18,11 +18,11 @@ NOTES:
 
  ******************************************************************************/   
  BEGIN
-      
-        EXECUTE IMMEDIATE 'TRUNCATE TABLE adw_prod_tgt.medicash_or_nonpolicy_temp_daily';
+        adw_prod_tgt.sp_adw_table_logs('MEDICASH_OR_NONPOLICY_TEMP_DAILY','SP_AH_MEDICASH_OR_NONPOLICY_DAILY',SYSDATE,'','DELETE');  
+        EXECUTE IMMEDIATE 'TRUNCATE TABLE adw_prod_tgt.MEDICASH_OR_NONPOLICY_TEMP_DAILY';
 
-
-        INSERT INTO adw_prod_tgt.medicash_or_nonpolicy_temp_daily (addr,advamt,canceltag,cashier,
+        adw_prod_tgt.sp_adw_table_logs('MEDICASH_OR_NONPOLICY_TEMP_DAILY','SP_AH_MEDICASH_OR_NONPOLICY_DAILY',SYSDATE,'','INSERT');    
+        INSERT INTO adw_prod_tgt.MEDICASH_OR_NONPOLICY_TEMP_DAILY (addr,advamt,canceltag,cashier,
                                                               collproofref,collref,ctr,cur,cwttag,
                                                               fao,insured_name,lifeid,
                                                               md,namestr,nonpolremark,oramt,ordate,
@@ -76,6 +76,7 @@ NOTES:
     ;
 
         COMMIT;
+        adw_prod_tgt.sp_adw_table_logs('MEDICASH_OR_NONPOLICY_TEMP_DAILY','SP_AH_MEDICASH_OR_NONPOLICY_DAILY',SYSDATE,SYSDATE,'UPDATE');  
 
 
         --block for getting the location --ADDED BY FRANCIS 06202025
