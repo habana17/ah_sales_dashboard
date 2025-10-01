@@ -141,7 +141,7 @@ NOTES:
 
         DELETE adw_prod_tgt.medicash_or_nonpolicy_daily
         WHERE 1=1 
-        AND  trunc(ordate) >= p_date; --updated by francis 09292025 
+        AND  trunc(ordate) >= trunc(sysdate); --updated by francis 09292025 
         --COMMIT;
 
         adw_prod_tgt.sp_adw_table_logs('MEDICASH_OR_NONPOLICY_DAILY','SP_AH_MEDICASH_OR_NONPOLICY_DAILY',SYSDATE,'','INSERT');
