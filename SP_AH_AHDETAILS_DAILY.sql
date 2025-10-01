@@ -160,7 +160,9 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_ISRHOS_DAILY','SP_AH_AHDETAILS_DAILY',SYSDA
     WHERE b.batchno IN (
             SELECT batchno
             FROM adw_prod_tgt.nlr_policy_tran_v2
-            WHERE trantype = 10009112
+            WHERE 1=1 
+            AND trantype in  (10009112, --NLR_POLICY_ISSUANCE
+                              10012168) --NLR_ISR_RPS
     )
                         ),
     getpolno_2 AS (
@@ -535,7 +537,8 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_EOM_AHR_CANCEL_DAILY','SP_AH_AHDETAILS_DAIL
                 WHERE f.enddate IS NULL 
                 AND d.statcode <> 529 
                 AND d.statcode <> 2653 
-                AND b.trantype = 10009112
+                AND b.trantype in  (10009112, --NLR_POLICY_ISSUANCE
+                                    10012168) --NLR_ISR_RPS
                 AND d.prodcode IN (SELECT map_value FROM adw_prod_tgt.nlr_data_mapping WHERE map_description IN ('NLR_EOM_D2C_PRODUCTS','NLR_EOM_OTHER_AH_PRODUCTS')
                                            UNION
                                            SELECT 'PHB' FROM dual
