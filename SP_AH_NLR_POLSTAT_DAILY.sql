@@ -70,8 +70,40 @@ WHERE
     -- and trunc (timestmp) = trunc (sysdate -1) --incremental
     and trunc (b.timestmp) = p_date
     ;
-COMMIT;
+
 adw_prod_tgt.sp_adw_table_logs('NLR_POLSTAT_DAILY','SP_AH_NLR_POLSTAT_DAILY',SYSDATE,SYSDATE,'UPDATE');
+
+MERGE INTO NLR_POLSTAT_DAILY npd
+USING (
+    SELECT 
+        npm.polno,
+        -- Decode statcode to policy status group category
+        DECODE(
+            npm.statcode,
+            551, 'IF In-Force',      -- Statcode 551 = In-Force policies
+            552, 'CA Cancelled',     -- Statcode 552 = Cancelled policies
+            'Lapsed'                 -- All other statcodes = Lapsed
+        ) AS polstat_grp,
+        -- Get the reference description from lookup table
+        ggr.refdesc AS polstat
+    FROM nlr_policy_mst_v2 npm
+    LEFT JOIN gct_geninfo_ref ggr ON ggr.refseqno = npm.statcode  -- Join on statcode to get description
+) src
+ON (src.polno = npd.polno)  -- Match records by policy number
+WHEN MATCHED THEN UPDATE SET
+    npd.polstat_grp = src.polstat_grp,
+    npd.polstat = src.polstat
+WHERE 
+    -- Only update when polstat_grp has changed
+    npd.polstat_grp != src.polstat_grp 
+    -- Or when polstat has changed
+    OR npd.polstat != src.polstat
+    -- Or when target polstat_grp is NULL but source has a value (missing data case)
+    OR (npd.polstat_grp IS NULL AND src.polstat_grp IS NOT NULL)
+    -- Or when target polstat is NULL but source has a value (missing data case)
+    OR (npd.polstat IS NULL AND src.polstat IS NOT NULL);
+
+    COMMIT;
 
     EXCEPTION
             WHEN OTHERS THEN
