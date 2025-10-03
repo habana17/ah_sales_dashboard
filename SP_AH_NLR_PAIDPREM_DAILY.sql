@@ -91,7 +91,7 @@ WITH
             AND c.billstat = 932
             AND c.netprem > 0
             -- AND trunc (b.timestmp) = trunc(sysdate - 1) --incremental
-            AND trunc (b.timestmp) = p_date
+            AND trunc (a.timestmp) = p_date
     )
 SELECT
     DECODE (prodcode,
