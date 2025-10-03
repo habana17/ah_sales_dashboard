@@ -68,7 +68,7 @@ WHERE
     AND b.enddate IS NULL
     AND a.statcode IN (551, 552, 553, 2619)
     -- and trunc (timestmp) = trunc (sysdate -1) --incremental
-    and trunc (b.timestmp) = p_date
+    and trunc (a.timestmp) = p_date
     ;
 COMMIT;
 adw_prod_tgt.sp_adw_table_logs('NLR_POLSTAT_DAILY','SP_AH_NLR_POLSTAT_DAILY',SYSDATE,SYSDATE,'UPDATE');
