@@ -44,7 +44,7 @@ a.POL_SOURCE,a.REFERAL_CODE,a.BRANCHCODE,a.SEGMENTCODE,a.LONGPOLNO,
 a.CAMPAIGNCODE,a.POLNO_LIFE,a.PROPERTYPOLNO
 FROM adw_prod_tgt.nlr_policy_mst_v2 a
 WHERE 1=1 
-        AND a.prodcode IN (SELECT map_value FROM adw_prod_tgt.nlr_data_mapping WHERE map_description IN ('NLR_EOM_OTHER_AH_PRODUCTS')
+        AND a.prodcode IN (SELECT map_value FROM adw_prod_tgt.nlr_data_mapping WHERE map_description IN ('NLR_EOM_OTHER_AH_PRODUCTS','NLR_EOM_D2C_PRODUCTS')
                                            UNION
                                            SELECT 'PHB' FROM dual
                                           )   
