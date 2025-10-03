@@ -113,7 +113,9 @@ SELECT
     premium_amt
 FROM
     nlr_paidprem_data;
+
    COMMIT;
+   
 adw_prod_tgt.sp_adw_table_logs('NLR_PAIDPREM_DAILY','SP_AH_NLR_PAIDPREM_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
  
