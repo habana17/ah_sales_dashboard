@@ -129,6 +129,32 @@ WITH nlr_portfolio_branch_date AS (
     AND TO_DATE(z.issue_dt, 'DD-Mon-YYYY') = p_date 
     order by z.issue_dt
     ;
+
+    UPDATE AH_TRANSACTIONS_DAILY
+    SET 
+    totalsi = 0,
+    commissionrate = 0,
+    commamt = 0,
+    commtax = 0,
+    sfeeamt = 0,
+    sfeewtax = 0,
+    commvat = 0,
+    grosspremin_peso = 0,
+    dst = 0,
+    other_charges = 0,
+    lgt = 0,
+    premtax = 0,
+    basicpremium = 0
+    WHERE trantype = 'CANCELLATION'
+    AND channel = 'D2C'
+    AND polno NOT IN (
+        SELECT polno
+        FROM adw_prod_tgt.d2c_valid_cancellation
+                      )
+    AND plantype NOT IN ('HCC', 'HCA', 'HCE', 'HCB', 'HCF', 'HCG', 'HCI', 'HCK', 'PET', 'HCP', 'PDC')
+    AND TO_DATE(issue_dt, 'DD-Mon-YYYY') = p_date
+     ;
+
     COMMIT;
     adw_prod_tgt.sp_adw_table_logs('AH_TRANSACTIONS_DAILY','SP_AH_LOAD_AHTRANSACTIONS',SYSDATE,SYSDATE,'UPDATE');
  
