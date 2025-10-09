@@ -10,6 +10,7 @@ REVISIONS:
 Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        08/07/2025            Francis          1. Create SP_AH_LOAD_AHTRANSACTIONS
+2.0        10/09/2025            Francis          1. added update transactions to 0 for cancelled d2c transactions 
 
 NOTES:
 
@@ -130,7 +131,7 @@ WITH nlr_portfolio_branch_date AS (
     order by z.issue_dt
     ;
 
-    UPDATE AH_TRANSACTIONS_DAILY
+    UPDATE AH_TRANSACTIONS_DAILY --added by francisc 10092025
     SET 
     totalsi = 0,
     commissionrate = 0,
