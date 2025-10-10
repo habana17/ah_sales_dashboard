@@ -378,7 +378,7 @@ SELECT DISTINCT
       WHEN a.line_pref = 'GA'
       THEN NVL(j.vchannel,l.list_of_value)
       WHEN a.line_pref = 'AC'
-      THEN NVL(m.map_value,k.map_value)
+      THEN COALESCE(m.map_value, k.map_value, j.vchannel, l.list_of_value) --NVL(m.map_value,k.map_value) --updated by francis 10102025
       ELSE
       NULL
       END as Channel,
