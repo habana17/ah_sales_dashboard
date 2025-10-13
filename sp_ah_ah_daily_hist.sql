@@ -14,6 +14,7 @@ REVISIONS:
 Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        10/10/2025            Francis          1. Create sp_ah_ah_daily_hist
+2.0        10/13/2025            Francis          2. added -7 refresh
 
 NOTES:
 
@@ -25,6 +26,7 @@ BEGIN
     v_days_back(1) := 90;
     v_days_back(2) := 60;
     v_days_back(3) := 30;
+    v_days_back(4) := 7; --added by francis 10132025
 
     -- Loop through each date
     FOR i IN 1..v_days_back.COUNT LOOP
