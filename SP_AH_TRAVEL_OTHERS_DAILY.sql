@@ -13,7 +13,8 @@ Ver          Date                  Author             Description
 1.0        07/03/2025            Francis          1. SP_AH_TRAVEL_OTHERS_DAILY
 2.0        08/11/2025            Francis          1. Changed the incremental into trandate
                                                   2. Changed not in to not exists
-3.0        09/26/2025            Francis          1. Removed the spoiled status                                                 
+3.0        09/26/2025            Francis          1. Removed the spoiled status
+4.0        10/13/2025            Francis          1. updated the netprem so that it would not bloat the value                                                  
 
 NOTES:
 
@@ -403,7 +404,10 @@ SELECT
     d.issue_source,
     
        -- Financial fields from premium summary
-    z.netprem,--    z.netpremtot,
+    -- z.netprem,--    z.netpremtot,
+    CASE  WHEN z.premium = 0 THEN 0
+    ELSE z.netprem
+    END AS netprem, --updated by francisc 10132025
     z.dst,--    z.docsamt,
     z.lgt,--    z.lgtamt,
     z.premtax,--    z.ptaxamt,
