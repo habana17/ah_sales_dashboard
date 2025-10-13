@@ -10,6 +10,7 @@ REVISIONS:
 Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        08/07/2025            Francis          1. Create SP_AH_LOAD_EIS
+2.0        10/13/2025            Francis          1. added channel cleanup for null channel values 
 
 NOTES:
 
@@ -809,6 +810,37 @@ BEGIN
      AND LENGTH(REGEXP_SUBSTR(polno, '[^-]+', 1, 3)) = 4 
      AND REGEXP_SUBSTR(polno, '[^-]+', 1, 3) LIKE 'IS%' 
      AND trunc(trandate) = p_date;
+
+
+   --channel cleanup
+   BEGIN --added by francis 10132025
+    FOR x
+        IN (SELECT DISTINCT 
+                   a.polno, 
+                   a.inseqno,
+                   CASE 
+                       WHEN c.nametype IN (44, 61115) THEN 10054509  -- ED (Enterprise Direct)
+                       ELSE 10054508  -- ID (Individual Direct)
+                   END AS new_channel
+              FROM NLR_PORTFOLIO_PISC_EIS_DAILY a,
+                   nlr_insured_mst_v2 nim,
+                   nlr_polrole_trn_v2 b,
+                   cnb_namelst_trn_v2 c
+             WHERE 1=1
+                   AND TRUNC(a.trandate) = p_date  -- incremental
+                   AND a.inseqno = nim.inseqno
+                   AND nim.polno = b.polno
+                   AND b.pertype = 556
+                   AND b.nameid = c.nameid
+                   AND a.channel is null
+                   )
+    LOOP
+        UPDATE NLR_PORTFOLIO_PISC_EIS_DAILY
+           SET channel = x.new_channel
+         WHERE inseqno = x.inseqno AND polno = x.polno;
+    END LOOP;
+   END;
+
 
 
            COMMIT;
