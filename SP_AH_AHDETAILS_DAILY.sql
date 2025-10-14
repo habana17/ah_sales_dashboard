@@ -13,7 +13,9 @@ Ver          Date                  Author             Description
 1.0        07/03/2025            Francis          1. SP_AH_AHDETAILS_DAILY
 2.0        08/13/2025            Francis          1. added NLR_EOM_D2C_PRODUCTS in map_description
 3.0        08/20/2025            Francis          1. added PHB in prodcode. PHB is obsolete in 2025, 
-                                                     but we needed this prodcode to get the 2024 data 
+                                                     but we needed this prodcode to get the 2024 data
+4.0        10/14/2025            Francis          1. test test                                               
+                                                     
         
 
 NOTES:
@@ -431,8 +433,8 @@ adw_prod_tgt.sp_adw_table_logs('TEMP_EOM_AHR_CANCEL_DAILY','SP_AH_AHDETAILS_DAIL
 -- DELETE  
 -- from TEMP_EOM_AHR_CANCEL_DAILY a where polno not in (select polno from adw_prod_tgt.d2c_valid_cancellation) and prodtype not in ('HCC', 'HCA', 'HCE','HCB','HCF', 'HCG', 'HCI', 'HCK', 'PET', 'HCP', 'PDC');
 -- --COMMIT;
-
-
+--  in d2c_valid_cancellation = valid record , negative 1:1 
+-- not in = 0
     
 
     adw_prod_tgt.sp_adw_table_logs('TEMP_NLR_PORTFOLIO_PISC_AH_DAILY','SP_AH_AHDETAILS_DAILY',SYSDATE,'','DELETE');
