@@ -9,6 +9,7 @@ REVISIONS:
 Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        07/08/2025       Francis              1. Create SP_AH_BCC_PAIDPREM_DAILY
+2.0        10/16/2025       Francis              2. added reference column 
 
 
 NOTES:
@@ -64,7 +65,8 @@ INSERT INTO
         DUEDATE,
         PMONTH,
         SALES_AMT,
-        PREMIUM_AMT
+        PREMIUM_AMT,
+        REFERENCE --updated by francis 10162025
     )
     WITH BCC_PRAIDPREM_DATA AS 
                                   (
@@ -77,7 +79,8 @@ INSERT INTO
                '' AS duedate,
                DENSE_RANK () OVER (PARTITION BY a.polno ORDER BY c.fundmstseqno)  pmonth,
                c.amount as sales_amt,
-               c.baseamount as premium_amt
+               c.baseamount as premium_amt,
+               c.reference --updated by francis 10162025
           FROM grb_policy_mst_v2   a,
                grb_poldate_mst  b,
                xbc_dtcfund_mst  c
@@ -112,7 +115,8 @@ INSERT INTO
                duedate,
                pmonth,
                sales_amt,
-               premium_amt
+               premium_amt,
+               reference --updated by francis 10162025
                from 
                BCC_PRAIDPREM_DATA;
 
