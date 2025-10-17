@@ -9,6 +9,7 @@ REVISIONS:
 Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        07/08/2025       Francis              1. Create SP_AH_ELIFE_POLSTAT_DAILY
+2.0        10/17/2025       Francis              1. added timestmp
 
 
 NOTES:
@@ -29,7 +30,8 @@ INSERT INTO
         PRODCODE,
         EFFDATE,
         EFFMONTH,
-        POLSTAT
+        POLSTAT,
+        TIMESTMP
     )
 SELECT
     DECODE (
@@ -60,7 +62,8 @@ SELECT
     prodcode,
     effdate,
     effmonth,
-    polstat
+    polstat,
+    z.timestmp
 FROM
     (
         SELECT

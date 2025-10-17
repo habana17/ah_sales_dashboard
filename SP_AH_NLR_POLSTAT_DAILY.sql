@@ -27,7 +27,8 @@ BEGIN
                 PRODCODE,
                 EFFDATE,
                 EFFMONTH,
-                POLSTAT
+                POLSTAT,
+                TIMESTMP
                                 )
 SELECT
     DECODE (
@@ -58,7 +59,8 @@ SELECT
     a.prodcode,
     b.effdate,
     TO_CHAR (b.effdate, 'MON-YY') effmonth,
-    adw_prod_tgt.fn_grp_getrefdesc (a.statcode) polstat
+    adw_prod_tgt.fn_grp_getrefdesc (a.statcode) polstat,
+    b.timestmp
 FROM
     adw_prod_tgt.nlr_policy_mst_v2 a,
     adw_prod_tgt.nlr_poldate_mst_v2 b

@@ -10,6 +10,7 @@ Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        07/08/2025       Francis              1. Create SP_AH_BCC_PAIDPREM_DAILY
 2.0        10/16/2025       Francis              2. added reference column 
+2.0        10/17/2025       Francis              1. added timestmp
 
 
 NOTES:
@@ -66,7 +67,8 @@ INSERT INTO
         PMONTH,
         SALES_AMT,
         PREMIUM_AMT,
-        REFERENCE --updated by francis 10162025
+        REFERENCE, --updated by francis 10162025
+        TIMESTMP
     )
     WITH BCC_PRAIDPREM_DATA AS 
                                   (
@@ -80,7 +82,8 @@ INSERT INTO
                DENSE_RANK () OVER (PARTITION BY a.polno ORDER BY c.fundmstseqno)  pmonth,
                c.amount as sales_amt,
                c.baseamount as premium_amt,
-               c.reference --updated by francis 10162025
+               c.reference, --updated by francis 10162025
+               b.timestmp
           FROM grb_policy_mst_v2   a,
                grb_poldate_mst  b,
                xbc_dtcfund_mst  c
@@ -116,7 +119,8 @@ INSERT INTO
                pmonth,
                sales_amt,
                premium_amt,
-               reference --updated by francis 10162025
+               reference, --updated by francis 10162025
+               timestmp
                from 
                BCC_PRAIDPREM_DATA;
 

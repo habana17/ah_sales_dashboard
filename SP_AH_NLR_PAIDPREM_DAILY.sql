@@ -9,6 +9,7 @@ REVISIONS:
 Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        07/08/2025       Francis              1. Create SP_AH_NLR_PAIDPREM_DAILY
+2.0        10/17/2025       Francis              1. added timestmp
 
 
 NOTES:
@@ -60,7 +61,8 @@ INSERT INTO
         DUEDATE,
         PMONTH,
         SALES_AMT,
-        PREMIUM_AMT
+        PREMIUM_AMT,
+        TIMESTMP
     )
 WITH
     nlr_paidprem_data AS (
@@ -78,7 +80,8 @@ WITH
             '' as fundtrndate,
             c.duedate,
             c.TOTAMTDUE AS sales_amt,
-            c.netprem AS premium_amt
+            c.netprem AS premium_amt,
+            b.timestmp
         FROM
             nlr_policy_mst_v2 a
             JOIN nlr_poldate_mst_v2 b ON a.polno = b.polno
@@ -110,7 +113,8 @@ SELECT
     duedate,
     pmonth,
     sales_amt,
-    premium_amt
+    premium_amt,
+    timestmp
 FROM
     nlr_paidprem_data;
 
