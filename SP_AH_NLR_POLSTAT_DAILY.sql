@@ -9,6 +9,8 @@ REVISIONS:
 Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        07/08/2025       Francis              1. Create SP_AH_NLR_POLSTAT_DAILY
+2.0        10/17/2025       Francis              1. added timestmp
+
 
 
 NOTES:
