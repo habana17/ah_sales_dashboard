@@ -3,7 +3,7 @@ OR REPLACE PROCEDURE sp_ah_sales_daily_hist AS
 
 TYPE t_days_back IS TABLE OF NUMBER INDEX BY PLS_INTEGER;
 v_days_back t_days_back;
-p_date DATE;
+v_date DATE;
 
 /******************************************************************************
 
@@ -52,12 +52,12 @@ BEGIN
             SYSDATE as archive_date
         FROM medicash_or_nonpolicy_daily d
         WHERE 1=1
-        AND TRUNC(ordate) = p_date;
+        AND TRUNC(ordate) = v_date;
 
         -- Delete data from source table
         DELETE FROM medicash_or_nonpolicy_daily
         WHERE 1=1
-        AND TRUNC(ordate) = p_date;  
+        AND TRUNC(ordate) = v_date;  
 
     BEGIN
         SP_AH_MEDICASH_OR_NONPOLICY_DAILY(v_date);
@@ -74,12 +74,12 @@ BEGIN
             SYSDATE as archive_date
         FROM medicash_or_ret_policy_det_daily d
         WHERE 1=1
-        AND TRUNC(ordate) = p_date;
+        AND TRUNC(ordate) = v_date;
 
         -- Delete data from source table
         DELETE FROM medicash_or_ret_policy_det_daily
         WHERE 1=1
-        AND TRUNC(ordate) = p_date;  
+        AND TRUNC(ordate) = v_date;  
 
 
     BEGIN
@@ -97,12 +97,12 @@ BEGIN
             SYSDATE as archive_date
         FROM medicash_or_d2c_daily d
         WHERE 1=1
-        AND TRUNC(ordate) = p_date;
+        AND TRUNC(ordate) = v_date;
 
         -- Delete data from source table
         DELETE FROM medicash_or_d2c_daily
         WHERE 1=1
-        AND TRUNC(ordate) = p_date;  
+        AND TRUNC(ordate) = v_date;  
 
     BEGIN
         SP_AH_MEDICASH_OR_D2C_DAILY(v_date);
@@ -119,12 +119,12 @@ BEGIN
             SYSDATE as archive_date
         FROM ooopsie_cardsales_daily d
         WHERE 1=1
-        AND TRUNC(paymentdate) = p_date;
+        AND TRUNC(paymentdate) = v_date;
 
         -- Delete data from source table
         DELETE FROM ooopsie_cardsales_daily
         WHERE 1=1
-        AND TRUNC(paymentdate) = p_date; 
+        AND TRUNC(paymentdate) = v_date; 
 
     BEGIN
         SP_AH_OOOPSIE_CARDSALES_DAILY(v_date);
@@ -141,12 +141,12 @@ BEGIN
             SYSDATE as archive_date
         FROM ooops_sale_extract_daily d
         WHERE 1=1
-        AND TRUNC(paymentdate) = p_date;
+        AND TRUNC(paymentdate) = v_date;
 
         -- Delete data from source table
         DELETE FROM ooops_sale_extract_daily
         WHERE 1=1
-        AND TRUNC(paymentdate) = p_date; 
+        AND TRUNC(paymentdate) = v_date; 
 
     BEGIN
         SP_AH_OOOPS_SALE_EXTRACT_DAILY(v_date);
@@ -164,12 +164,12 @@ BEGIN
             SYSDATE as archive_date
         FROM elife_polstat_daily d
         WHERE 1=1
-        AND TRUNC(timestmp) = p_date;
+        AND TRUNC(timestmp) = v_date;
 
         -- Delete data from source table
         DELETE FROM elife_polstat_daily
         WHERE 1=1
-        AND TRUNC(timestmp) = p_date; 
+        AND TRUNC(timestmp) = v_date; 
  
     BEGIN
         SP_AH_ELIFE_POLSTAT_DAILY(v_date);
@@ -187,12 +187,12 @@ BEGIN
             SYSDATE as archive_date
         FROM nlr_polstat_daily d
         WHERE 1=1
-        AND TRUNC(timestmp) = p_date;
+        AND TRUNC(timestmp) = v_date;
 
         -- Delete data from source table
         DELETE FROM nlr_polstat_daily
         WHERE 1=1
-        AND TRUNC(timestmp) = p_date;
+        AND TRUNC(timestmp) = v_date;
 
     BEGIN
         SP_AH_NLR_POLSTAT_DAILY(v_date);
@@ -209,12 +209,12 @@ BEGIN
             SYSDATE as archive_date
         FROM nlr_paidprem_daily d
         WHERE 1=1
-        AND TRUNC(timestmp) = p_date;
+        AND TRUNC(timestmp) = v_date;
 
         -- Delete data from source table
         DELETE FROM nlr_paidprem_daily
         WHERE 1=1
-        AND TRUNC(timestmp) = p_date;
+        AND TRUNC(timestmp) = v_date;
 
     BEGIN
         SP_AH_NLR_PAIDPREM_DAILY(v_date);
@@ -231,12 +231,12 @@ BEGIN
             SYSDATE as archive_date
         FROM bcc_paidprem_daily d
         WHERE 1=1
-        AND TRUNC(timestmp) = p_date;
+        AND TRUNC(timestmp) = v_date;
 
         -- Delete data from source table
         DELETE FROM bcc_paidprem_daily
         WHERE 1=1
-        AND TRUNC(timestmp) = p_date;
+        AND TRUNC(timestmp) = v_date;
 
     BEGIN
         SP_AH_BCC_PAIDPREM_DAILY(v_date);
