@@ -465,68 +465,7 @@ LEFT JOIN get_ah_chan m
    ;
 
 adw_prod_tgt.sp_adw_table_logs('NLR_PORTFOLIO_PISC_EIS_DAILY','SP_AH_LOAD_EIS',SYSDATE,SYSDATE,'UPDATE');
-
-
-
-/****************old 2 ***************/
---       WITH pre_filtered_policies AS (
---     SELECT DISTINCT polno 
---     FROM adw_prod_tgt.TEMP_NLR_PORTFOLIO_PISC_EIS_DAILY
--- ),
--- filtered_prod_tran AS (
---     SELECT p.polno, 
---            MAX(p.channel) as channel,
---            MAX(p.location) as location,
---            MAX(p.platform) as platform,
---            MAX(p.distchannel_desc) as distchannel_desc
---     FROM adw_prod_tgt.nlr_policy_prod_tran p
---     INNER JOIN pre_filtered_policies pf ON p.polno = pf.polno
---     WHERE p.enddate IS NULL
---     GROUP BY p.polno
--- )
--- SELECT DISTINCT
---     a.POLNO, a.BATCHNO, a.INTMCD, a.INTERMEDIARY,
---     a.ASSD_NO, a.ASSURED_NAME, a.CO_CD, a.LINE_PREF, a.SUBLINE_PREF, a.ISS_PREF,
---     a.POL_YY, a.POL_SEQ_NO, a.REN_SEQ_NO, a.POLICY_TYPE, a.ENDT_ISS_PREF, a.ENDT_YY,
---     a.ENDT_SEQ_NO, a.EDNT_TYPE, a.AFFECT_TAG, a.POLICY_STATUS, a.INCEPT_DT, a.EXPIRY_DT,
---     a.ISSUE_DT, a.POLTRNEFFDATE, a.EFF_DT, a.ITEM_NO, a.PERIL_CD, a.PREM_AMT, a.TSI_AMT,
---     a.CURR_CD, a.DOC_STAMPS, a.VAT_AMT, a.PREM_TAX, a.OCHR_FST, a.OTH_CHRGS, a.COMM_AMT,
---     a.COMM_RATE, a.COMM_TAX, a.SOURCE_SYS, a.ACCTC_TAG, a.LOC_GOV_TAX, a.NET_RET_PREM,
---     a.NET_RET_TSI, a.TOT_FAC_PREM, a.TOT_FAC_TSI, a.XOL_PREM_AMT, a.ORG_TYPE,
---     a.SEGMENT_CODE, a.POLTYPE, a.EFFDATE, a.CLNTID, a.AGTNO, a.TRANDATE, a.EFFDATE_PARM,
---     a.SFEEAMT, a.SFEETAX, a.SFEEWTAXAMT, a.CREATED_BY, a.POLSOURCE, a.ACCT_OFFICER,
---     a.USERID, a.polnum, a.REPORTNAME, a.ACCTGDST, a.acctgtsi, a.ACCTGOTHCHRG, a.ISS_NAME,
---     a.TRANTYPE, a.TERM, a.GPREMTOT, a.TRANDATEPARM,
---     b.channel, b.location, b.platform, b.distchannel_desc,a.inseqno
--- FROM adw_prod_tgt.TEMP_NLR_PORTFOLIO_PISC_EIS_DAILY a
--- LEFT JOIN filtered_prod_tran b ON a.polno = b.polno;
-/****************old 2 ***************/
-
-
-/****************old 1 ***************/
-   --  SELECT DISTINCT
-   --                          a.POLNO,a.BATCHNO,a.INTMCD,a.INTERMEDIARY,
-   --                          a.ASSD_NO,a.ASSURED_NAME,a.CO_CD,a.LINE_PREF,a.SUBLINE_PREF,a.ISS_PREF,
-   --                          a.POL_YY,a.POL_SEQ_NO,a.REN_SEQ_NO,a.POLICY_TYPE,a.ENDT_ISS_PREF,a.ENDT_YY,
-   --                          a.ENDT_SEQ_NO,a.EDNT_TYPE,a.AFFECT_TAG,a.POLICY_STATUS,a.INCEPT_DT,a.EXPIRY_DT,
-   --                          a.ISSUE_DT,a.POLTRNEFFDATE,a.EFF_DT,a.ITEM_NO,a.PERIL_CD,a.PREM_AMT,a.TSI_AMT,
-   --                          a.CURR_CD,a.DOC_STAMPS,a.VAT_AMT,a.PREM_TAX,a.OCHR_FST,a.OTH_CHRGS,a.COMM_AMT,
-   --                          a.COMM_RATE,a.COMM_TAX,a.SOURCE_SYS,a.ACCTC_TAG,a.LOC_GOV_TAX,a.NET_RET_PREM,
-   --                          a.NET_RET_TSI,a.TOT_FAC_PREM,a.TOT_FAC_TSI,a.XOL_PREM_AMT,a.ORG_TYPE,
-   --                          a.SEGMENT_CODE,a.POLTYPE,a.EFFDATE,a.CLNTID,a.AGTNO,a.TRANDATE,a.EFFDATE_PARM,
-   --                          a.SFEEAMT,a.SFEETAX,a.SFEEWTAXAMT,a.CREATED_BY,a.POLSOURCE,a.ACCT_OFFICER,
-   --                          a.USERID,a.polnum,a.REPORTNAME,a.ACCTGDST,a.acctgtsi,a.ACCTGOTHCHRG,a.ISS_NAME,
-   --                          a.TRANTYPE,a.TERM,a.GPREMTOT,a.TRANDATEPARM,b.channel,b.location,b.platform,b.distchannel_desc
-   --   FROM adw_prod_tgt.TEMP_NLR_PORTFOLIO_PISC_EIS_DAILY  a,
-   --        adw_prod_tgt.nlr_policy_prod_tran               b
-   --        --adw_prod_tgt.nlr_insured_trn_v2                 c
-   --   WHERE     a.polno = b.polno
-   --         --AND b.polno = c.polno
-   --         --AND a.batchno = c.batchno
-   --         --AND b.inseqno = c.inseqno
-   --         AND b.enddate IS NULL;
-   /****************old 1 ***************/    
-
+ 
 --TRAVEL LOCATION 
 BEGIN
         FOR x
@@ -813,34 +752,30 @@ BEGIN
 
 
    --channel cleanup
-   BEGIN --added by francis 10132025
-    FOR x
-        IN (SELECT DISTINCT 
-                   a.polno, 
-                   a.inseqno,
-                   CASE 
-                       WHEN c.nametype IN (44, 61115) THEN 10054509  -- ED (Enterprise Direct)
-                       ELSE 10054508  -- ID (Individual Direct)
-                   END AS new_channel
-              FROM NLR_PORTFOLIO_PISC_EIS_DAILY a,
-                   nlr_insured_mst_v2 nim,
-                   nlr_polrole_trn_v2 b,
-                   cnb_namelst_trn_v2 c
-             WHERE 1=1
-                   AND TRUNC(a.trandate) = p_date  -- incremental
-                   AND a.inseqno = nim.inseqno
-                   AND nim.polno = b.polno
-                   AND b.pertype = 556
-                   AND b.nameid = c.nameid
-                   AND a.channel is null
-                   )
-    LOOP
-        UPDATE NLR_PORTFOLIO_PISC_EIS_DAILY
-           SET channel = x.new_channel
-         WHERE inseqno = x.inseqno AND polno = x.polno;
-    END LOOP;
-   END;
-
+   MERGE INTO NLR_PORTFOLIO_PISC_EIS_DAILY ttd --added by francis 10292025
+                    USING (
+                        SELECT DISTINCT 
+                            a.polno, 
+                            a.inseqno,
+                            CASE 
+                                WHEN c.nametype IN (44, 61115) THEN 10054509  -- ED (Enterprise Direct)
+                                ELSE 10054508  -- ID (Individual Direct)
+                            END AS new_channel
+                        FROM NLR_PORTFOLIO_PISC_EIS_DAILY a,
+                            nlr_insured_mst_v2 nim,
+                            nlr_polrole_trn_v2 b,
+                            cnb_namelst_trn_v2 c
+                        WHERE 1=1
+                        AND TRUNC(a.trandate) = p_date  -- incremental 
+                        AND a.inseqno = nim.inseqno
+                        AND nim.polno = b.polno
+                        AND b.pertype = 556
+                        AND b.nameid = c.nameid
+                        AND a.channel IS NULL
+                        ) src
+                        ON (ttd.inseqno = src.inseqno AND ttd.polno = src.polno)
+                        WHEN MATCHED THEN
+                        UPDATE SET ttd.channel = src.new_channel;
 
 
            COMMIT;

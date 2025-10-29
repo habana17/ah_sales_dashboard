@@ -10,6 +10,8 @@ REVISIONS:
 Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        08/07/2025            Francis          1. Create SP_AH_LOAD_TRAVELTRANSACTIONS
+2.0        10/28/2025            Francis          1. added clean up for null intermediary and assured name 
+3.0        10/29/2025            Francis          1. added clean up for null channels
 
 NOTES:
 
@@ -212,7 +214,30 @@ WITH tbl_sched AS (
                                     )
                     WHERE assured_name IS NULL;    
 
-
+                    --channel clean up for travel if missed on EIS -- added by francis 10292025
+                    MERGE INTO travel_transactions_daily ttd
+                    USING (
+                        SELECT DISTINCT 
+                            a.polno, 
+                            a.inseqno,
+                            CASE 
+                                WHEN c.nametype IN (44, 61115) THEN 'Enterprise Direct'
+                                ELSE 'Individual Direct'
+                            END AS new_channel
+                        FROM travel_transactions_daily a,
+                            nlr_insured_mst_v2 nim,
+                            nlr_polrole_trn_v2 b,
+                            cnb_namelst_trn_v2 c
+                        WHERE a.inseqno = nim.inseqno
+                        AND nim.polno = b.polno
+                        AND b.pertype = 556
+                        AND b.nameid = c.nameid
+                        AND a.channel IS NULL
+                        ) src
+                        ON (ttd.inseqno = src.inseqno AND ttd.polno = src.polno)
+                        WHEN MATCHED THEN
+                        UPDATE SET ttd.channel = src.new_channel;
+        
             COMMIT;
 
             adw_prod_tgt.sp_adw_table_logs('TRAVEL_TRANSACTIONS_DAILY','SP_AH_LOAD_TRAVELTRANSACTIONS',SYSDATE,SYSDATE,'UPDATE');
