@@ -186,8 +186,35 @@ WITH tbl_sched AS (
                        WHERE ooo.promo_code = oo.discount_code)o
             ON o.polno = x.polno );
 
+            ---intermediary cleanup for null data---
+                UPDATE travel_transactions_daily ttd
+                SET intermediary = (
+                    SELECT MAX(b.namestr)
+                    FROM XAG_PROFILE_v2 x
+                    INNER JOIN cnb_namelst_trn_v2 b ON x.nameid = b.nameid
+                    WHERE x.agtno = ttd.agtno
+                    GROUP BY x.agtno
+                                    )
+                WHERE intermediary IS NULL;
+
+
+            ---assured_name cleanup for null data---
+                UPDATE travel_transactions_daily ttd
+                SET assured_name = (
+                    SELECT MAX(CASE WHEN pr.pertype = 556 THEN 
+                                adw_prod_tgt.parsename_temp(nl.namestr, 'LFM', 'FML') END)
+                    FROM adw_prod_tgt.nlr_polrole_trn_v2 pr
+                    JOIN adw_prod_tgt.cnb_namelst_trn_v2 nl ON pr.nameid = nl.nameid
+                    WHERE pr.pertype IN (556, 862) 
+                    AND pr.enddate IS NULL
+                    AND pr.polno = ttd.polno
+                    GROUP BY pr.polno
+                                    )
+                    WHERE assured_name IS NULL;    
+
 
             COMMIT;
+
             adw_prod_tgt.sp_adw_table_logs('TRAVEL_TRANSACTIONS_DAILY','SP_AH_LOAD_TRAVELTRANSACTIONS',SYSDATE,SYSDATE,'UPDATE');
 
 END SP_AH_LOAD_TRAVELTRANSACTIONS;
