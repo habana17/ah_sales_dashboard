@@ -10,6 +10,8 @@ Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        07/08/2025       Francis              1. Create SP_AH_ELIFE_POLSTAT_DAILY
 2.0        10/17/2025       Francis              1. added timestmp
+3.0        11/12/2025       Francis              1. update all null timestmp
+                                                 2. add deduplication
 
 
 NOTES:
@@ -97,6 +99,10 @@ WHERE 1=1
 
 adw_prod_tgt.sp_adw_table_logs('ELIFE_POLSTAT_DAILY','SP_AH_ELIFE_POLSTAT_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
+
+-- =============================================================================
+-- UPDATE - Update policy status 
+-- =============================================================================
 MERGE INTO ELIFE_POLSTAT_DAILY npd
 USING (
     SELECT 
@@ -126,6 +132,27 @@ WHERE
     OR (npd.polstat_grp IS NULL AND src.polstat_grp IS NOT NULL)
     -- Or when target polstat is NULL but source has a value (missing data case)
     OR (npd.polstat IS NULL AND src.polstat IS NOT NULL);
+
+-- =============================================================================
+-- UPDATE - Update timestmp that are null
+-- =============================================================================
+    MERGE INTO elife_polstat_daily pd
+    USING grb_poldate_mst pm
+    ON (pd.polno = pm.polno)
+    WHEN MATCHED THEN
+    UPDATE SET pd.timestmp = pm.timestmp
+    WHERE pd.timestmp IS NULL;
+
+-- =============================================================================
+-- DELETE - Deduplicate
+-- =============================================================================
+    DELETE FROM elife_polstat_daily
+    WHERE ROWID NOT IN  (
+    SELECT MIN(ROWID)
+    FROM elife_polstat_daily
+    GROUP BY polno
+                        );
+
 
 COMMIT;
 
