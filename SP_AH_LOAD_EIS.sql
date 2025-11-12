@@ -11,6 +11,7 @@ Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        08/07/2025            Francis          1. Create SP_AH_LOAD_EIS
 2.0        10/13/2025            Francis          1. added channel cleanup for null channel values 
+3.0        10/19/2025            Francis          1. revised channel cleanup 
 
 NOTES:
 

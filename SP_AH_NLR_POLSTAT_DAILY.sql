@@ -10,6 +10,8 @@ Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        07/08/2025       Francis              1. Create SP_AH_NLR_POLSTAT_DAILY
 2.0        10/17/2025       Francis              1. added timestmp
+3.0        11/12/2025       Francis              1. update all null timestmp
+                                                 2. add deduplication
 
 
 
@@ -77,6 +79,9 @@ WHERE
 
 adw_prod_tgt.sp_adw_table_logs('NLR_POLSTAT_DAILY','SP_AH_NLR_POLSTAT_DAILY',SYSDATE,SYSDATE,'UPDATE');
 
+-- =============================================================================
+-- UPDATE - Update policy status 
+-- =============================================================================
 MERGE INTO NLR_POLSTAT_DAILY npd
 USING (
     SELECT 
@@ -106,6 +111,28 @@ WHERE
     OR (npd.polstat_grp IS NULL AND src.polstat_grp IS NOT NULL)
     -- Or when target polstat is NULL but source has a value (missing data case)
     OR (npd.polstat IS NULL AND src.polstat IS NOT NULL);
+
+
+-- =============================================================================
+-- UPDATE - Update timestmp that are null
+-- =============================================================================
+    MERGE INTO nlr_polstat_daily pd
+    USING nlr_poldate_mst_v2 pm
+    ON (pd.polno = pm.polno)
+    WHEN MATCHED THEN
+    UPDATE SET pd.timestmp = pm.timestmp
+    WHERE pd.timestmp IS NULL;
+
+-- =============================================================================
+-- DELETE - Deduplicate
+-- =============================================================================
+    DELETE FROM nlr_polstat_daily
+    WHERE ROWID NOT IN  (
+    SELECT MIN(ROWID)
+    FROM nlr_polstat_daily
+    GROUP BY polno
+                        );
+
 
     COMMIT;
 
