@@ -13,8 +13,6 @@ Ver          Date                  Author             Description
 3.0        11/12/2025       Francis              1. update all null timestmp
                                                  2. add deduplication
 
-
-
 NOTES:
 
  ******************************************************************************/
