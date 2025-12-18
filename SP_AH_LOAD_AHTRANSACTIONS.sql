@@ -11,6 +11,8 @@ Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        08/07/2025            Francis          1. Create SP_AH_LOAD_AHTRANSACTIONS
 2.0        10/09/2025            Francis          1. added update transactions to 0 for cancelled d2c transactions 
+3.0        12/05/2025            Francis          1. added enddate is null to avoid duplication 
+4.0        12/15/2025            Francis          1. added scripts that handle duplication of rows with issuedate and ordate problem
 
 NOTES:
 
@@ -108,6 +110,7 @@ WITH nlr_portfolio_branch_date AS (
                     adw_prod_tgt.nlr_polrole_trn_v2 b--POLICY_ROLE_DIM b
                WHERE a.nameid = b.nameid
                AND pertype = 561
+               AND b.enddate is null --added by francis 12052025
                AND a.source_name = 'ELIFE'
                AND a.table_name = 'XAG_PROFILE') h
     ON h.polno = z.polno
@@ -157,6 +160,68 @@ WITH nlr_portfolio_branch_date AS (
      ;
 
     COMMIT;
+
+
+--Inserting duplicated data with issuedate and ordate  
+INSERT INTO AH_TRANSACTIONS_DAILY_HIST
+WITH get_batch_valid AS (
+    SELECT * 
+    FROM (
+        SELECT DISTINCT
+            a.batchno,
+            a.billseqno, 
+            c.orno,
+            a.issuedate, 
+            c.ordate, 
+            c.orno AS ororno
+        FROM adw_prod_tgt.nlr_billing_mst_v2 a
+        INNER JOIN adw_prod_tgt.nlr_billing_paydtl b ON a.billseqno = b.billseqno
+        INNER JOIN adw_prod_tgt.nlr_or_history c ON b.reconref = TO_CHAR(c.orno)
+        WHERE 1=1 
+        AND a.batchno IN (
+            SELECT DISTINCT batchno 
+            FROM ah_transactions_daily
+           WHERE TRUNC(extract_date) = p_date
+        )
+    )
+)
+SELECT a.*,SYSDATE as archive_date
+FROM ah_transactions_daily a
+INNER JOIN get_batch_valid b ON a.batchno = b.batchno
+WHERE TRUNC(a.trandate) <> TRUNC(b.ordate);
+ 
+--deleting duplicated data with issuedate and ordate --added by francis 12152025
+DELETE FROM ah_transactions_daily a
+WHERE EXISTS (
+    WITH get_batch_valid AS (
+        SELECT * 
+        FROM (
+            SELECT DISTINCT
+                a2.batchno,
+                a2.billseqno, 
+                c.orno,
+                a2.issuedate, 
+                c.ordate, 
+                c.orno AS ororno
+            FROM adw_prod_tgt.nlr_billing_mst_v2 a2
+            INNER JOIN adw_prod_tgt.nlr_billing_paydtl b ON a2.billseqno = b.billseqno
+            INNER JOIN adw_prod_tgt.nlr_or_history c ON b.reconref = TO_CHAR(c.orno)
+            WHERE 1=1 
+            AND a2.batchno IN (
+                SELECT DISTINCT batchno 
+                FROM ah_transactions_daily
+               WHERE TRUNC(extract_date) = p_date
+            )
+        )
+    )
+    SELECT 1
+    FROM get_batch_valid b
+    WHERE a.batchno = b.batchno
+    AND TRUNC(a.trandate) <> TRUNC(b.ordate)
+);
+
+COMMIT;
+
     adw_prod_tgt.sp_adw_table_logs('AH_TRANSACTIONS_DAILY','SP_AH_LOAD_AHTRANSACTIONS',SYSDATE,SYSDATE,'UPDATE');
  
 END SP_AH_LOAD_AHTRANSACTIONS;

@@ -15,6 +15,8 @@ REVISIONS:
 Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
 1.0        10/14/2025            Francis          1. sp_mpii_sales_daily_hist
+2.0        12/12/2025            Francis          2. added 7 days of refresh per week  
+
 
 NOTES:
 
@@ -23,10 +25,13 @@ NOTES:
 BEGIN
 
  -- Define the days back to process
-    v_days_back(1) := 90;
-    v_days_back(2) := 60;
-    v_days_back(3) := 30;
-    v_days_back(4) := 7; 
+    v_days_back(1) := 7; -- updated by francis 12122025
+    v_days_back(2) := 6;
+    v_days_back(3) := 5;
+    v_days_back(4) := 4; 
+    v_days_back(5) := 3;
+    v_days_back(6) := 2;
+    v_days_back(7) := 1;
 
     -- Loop through each date
     FOR i IN 1..v_days_back.COUNT LOOP

@@ -466,8 +466,9 @@ LEFT JOIN get_ah_chan m
    ;
 
 adw_prod_tgt.sp_adw_table_logs('NLR_PORTFOLIO_PISC_EIS_DAILY','SP_AH_LOAD_EIS',SYSDATE,SYSDATE,'UPDATE');
+
  
---TRAVEL LOCATION 
+-- --TRAVEL LOCATION 
 BEGIN
         FOR x
             IN (SELECT distinct a.polno, a.inseqno, d.iss_name new_loc
@@ -501,7 +502,41 @@ BEGIN
                SET location = UPPER(x.new_loc)
              WHERE inseqno = x.inseqno AND polno = x.polno;
         END LOOP;
-    END;
+END;
+
+   -- MERGE INTO NLR_PORTFOLIO_PISC_EIS_DAILY tgt
+   --    USING (
+   --             SELECT DISTINCT a.polno, a.inseqno, d.iss_name new_loc
+   --             FROM NLR_PORTFOLIO_PISC_EIS_DAILY a
+   --             JOIN xag_assign_v2 c
+   --                ON a.agtno = c.agtno AND c.enddate IS NULL
+   --             JOIN  (
+   --                   SELECT iss_pref, iss_name FROM nlr_branch_ref_v2
+   --                   UNION ALL
+   --                   SELECT branchcode, description FROM cxx_branch_ref_v2
+   --                   ) d
+   --                ON c.branchcode = d.iss_pref
+   --             WHERE trunc(a.trandate) = p_date
+   --             AND a.line_pref = 'GA'
+   --                AND a.agtno IN   (
+   --                      10352, 12651, 21543, 21550, 21586, 21605, 21606, 21609, 21618, 21619,
+   --                      21620, 21622, 21623, 21624, 21627, 21628, 21629, 21630, 21631, 21632,
+   --                      21633, 21634, 21635, 21638, 21647, 21653, 21654, 21656, 21657, 21658,
+   --                      21661, 21662, 21665, 21667, 21670, 21675, 21679, 21689, 21691, 21696,
+   --                      21700, 21703, 21705, 21715, 21717, 21718, 21757, 21768, 21779, 21781,
+   --                      21796, 21801, 21802, 21803, 21805, 21807, 21808, 21851, 21861, 21866,
+   --                      21869, 21881, 21888, 21892, 21895, 21898, 21902, 21917, 21924, 21930,
+   --                      21932, 21934, 21935, 21947, 21948, 26723, 26780, 27161, 27320, 27327,
+   --                      27348, 27362, 27368, 27640, 28392, 30490, 30496, 31324, 31341, 31559,
+   --                      31629, 31689, 31719, 31779, 32226, 32289, 32322, 32363, 32372, 32466,
+   --                      32477, 32596, 32602, 32619, 32902, 33030, 33138, 33150, 33230, 33306,
+   --                      33311, 33419, 33551
+    
+   --                   )
+   --             ) src
+   --                ON (tgt.polno = src.polno AND tgt.inseqno = src.inseqno)
+   --                WHEN MATCHED THEN UPDATE SET tgt.location = UPPER(src.new_loc);
+
 
 
         --LOCATION CLEANUP     
