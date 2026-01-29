@@ -13,8 +13,8 @@ PURPOSE:    archiving data and refresh
 REVISIONS:
 Ver          Date                  Author             Description
 ---------  ----------          ---------------  ------------------------------------
-1.0        10/17/2025       Francis          1. Create sp_ah_sales_daily_hist
-2.0        12/12/2025            Francis     2. added 7 days of refresh per week  
+1.0        10/17/2025       Francis             1. Create sp_ah_sales_daily_hist
+2.0        12/12/2025       Francis             2. added 7 days of refresh per week  
 
 
 NOTES:
