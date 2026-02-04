@@ -12,6 +12,7 @@ Ver          Date                  Author             Description
 1.0        08/07/2025            Francis          1. Create SP_AH_LOAD_TRAVELTRANSACTIONS
 2.0        10/28/2025            Francis          1. added clean up for null intermediary and assured name 
 3.0        10/29/2025            Francis          1. added clean up for null channels
+4.0        02/04/2026            Francis          1. update gpremtot for new_grossprem to align in front end
 
 NOTES:
 
@@ -238,7 +239,46 @@ WITH tbl_sched AS (
                         WHEN MATCHED THEN
                         UPDATE SET ttd.channel = src.new_channel;
         
-            COMMIT;
+            
+
+---update gpremtot for new_grossprem to align in front end
+            UPDATE TRAVEL_TRANSACTIONS_DAILY ttd
+SET gpremtot = (
+    SELECT nbs.new_grossprem
+    FROM nlr_bill_sched_ins_dtl_v2 nbs
+    WHERE nbs.batchno = ttd.batchno
+        AND nbs.inseqno = ttd.inseqno
+        AND nbs.new_grossprem IS NOT NULL
+        AND nbs.new_grossprem > 0
+        AND nbs.premium <> nbs.new_grossprem
+        AND nbs.polno LIKE 'TR%'
+        AND nbs.premium > 0
+        AND nbs.batchno NOT IN (
+            SELECT DISTINCT batchno 
+            FROM travel_transactions_daily 
+            WHERE group_polno IS NOT NULL
+        )
+    AND ROWNUM = 1
+)
+WHERE EXISTS (
+    SELECT 1
+    FROM nlr_bill_sched_ins_dtl_v2 nbs
+    WHERE nbs.batchno = ttd.batchno
+        AND nbs.inseqno = ttd.inseqno
+        AND nbs.new_grossprem IS NOT NULL
+        AND nbs.new_grossprem > 0
+        AND nbs.premium <> nbs.new_grossprem
+        AND nbs.polno LIKE 'TR%'
+        AND nbs.premium > 0
+        AND nbs.batchno NOT IN (
+            SELECT DISTINCT batchno 
+            FROM travel_transactions_daily 
+            WHERE group_polno IS NOT NULL
+        )
+        AND ttd.gpremtot <> nbs.new_grossprem  -- Only update if values are different
+);
+
+COMMIT;
 
             adw_prod_tgt.sp_adw_table_logs('TRAVEL_TRANSACTIONS_DAILY','SP_AH_LOAD_TRAVELTRANSACTIONS',SYSDATE,SYSDATE,'UPDATE');
 
