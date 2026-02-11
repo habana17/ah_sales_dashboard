@@ -13,6 +13,8 @@ Ver          Date                  Author             Description
 2.0        10/28/2025            Francis          1. added clean up for null intermediary and assured name 
 3.0        10/29/2025            Francis          1. added clean up for null channels
 4.0        02/04/2026            Francis          1. update gpremtot for new_grossprem to align in front end
+5.0        02/10/2026            Francis          1. added AND c.inseqno = z.inseqno so that it wont read 2 plan type 
+
 
 NOTES:
 
@@ -165,6 +167,7 @@ WITH tbl_sched AS (
                 AND z.batchno = c.batchno
                 AND d.covseqno = b.covseqno
                 AND c.inseqno = d.inseqno
+                AND c.inseqno = z.inseqno   --added by francis 2/10/2026 for reading 2 plan type 
                 AND e.polno = z.polno
                 AND z.line_pref = 'GA'
                 --AND TO_DATE(z.issue_dt, 'DD-Mon-YYYY') = trunc(sysdate) - 1 --incremental
@@ -242,7 +245,7 @@ WITH tbl_sched AS (
             
 
 ---update gpremtot for new_grossprem to align in front end
-            UPDATE TRAVEL_TRANSACTIONS_DAILY ttd
+UPDATE TRAVEL_TRANSACTIONS_DAILY ttd
 SET gpremtot = (
     SELECT nbs.new_grossprem
     FROM nlr_bill_sched_ins_dtl_v2 nbs
